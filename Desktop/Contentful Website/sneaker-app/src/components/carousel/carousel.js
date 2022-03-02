@@ -5,7 +5,7 @@ const Carousel = () => {
   const [isCarouselLoading, setIsCarouselLoading] = useState(false);
   const [carouselSlides, setCarouselSlides] = useState([]);
 
-  const cleanUpCarouselSlides = (rawData) => {
+  const cleanUpCarouselSlides = useCallback((rawData) => {
     const cleanSlides = rawData.Map((slide) => {
       const { sys, fields } = slide;
       const { id } = sys;
@@ -17,19 +17,27 @@ const Carousel = () => {
     });
 
     setCarouselSlides(cleanSlides);
-  };
+  }, []);
 
   const getCarouselSlides = useCallback(async () => {
+    setIsCarouselLoading(true);
     try {
       const response = await client.getEntries({
         content_type: "playerCarousel",
       });
       const responseData = response.items;
       console.log(responseData);
+      if (responseData) {
+        cleanUpCarouselSlides(responseData);
+      } else {
+        setCarouselSlides([]);
+      }
+      setIsCarouselLoading(false);
     } catch (error) {
       console.log(error);
+      setIsCarouselLoading(false);
     }
-  }, []);
+  }, [cleanUpCarouselSlides]);
 
   useEffect(() => {
     getCarouselSlides();
