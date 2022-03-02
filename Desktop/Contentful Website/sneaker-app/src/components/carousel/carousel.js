@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { client } from "../../client";
+import Carouselslide from "./CarouselSlide";
 
 const Carousel = () => {
   const [isCarouselLoading, setIsCarouselLoading] = useState(false);
   const [carouselSlides, setCarouselSlides] = useState([]);
 
   const cleanUpCarouselSlides = useCallback((rawData) => {
-    const cleanSlides = rawData.Map((slide) => {
+    const cleanSlides = rawData.map((slide) => {
       const { sys, fields } = slide;
       const { id } = sys;
       const slideTitle = fields.title;
@@ -43,9 +44,22 @@ const Carousel = () => {
     getCarouselSlides();
   }, [getCarouselSlides]);
 
+  console.log(carouselSlides);
+
   return (
     <div>
-      <h1>Sneaker Carousel</h1>
+      {carouselSlides.map((item) => {
+        const { id, slideBg, slideTitle, slideDescription } = item;
+
+        return (
+          <Carouselslide
+            key={id}
+            slideTitle={slideTitle}
+            slideDescription={slideDescription}
+            slideBg={slideBg}
+          />
+        );
+      })}
     </div>
   );
 };
